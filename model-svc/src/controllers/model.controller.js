@@ -10,11 +10,13 @@ import { pestModel } from "../models/pest.model.js";
 
 export const predictDisease = catchAsync(async(req, res, next) => {
     const language = req.query.language !== undefined ? req.query.language : config.language;
+    console.log("res",req.body)
     const file = req.files[0]
     const [imageResponse, predictResponse] = await Promise.all([uploadImage(file), modelPredict(file.buffer, file.mimetype, diseaseObject[language])])
     if (Object.keys(predictResponse).length > 0) {
       const data = {...predictResponse, image_url: imageResponse, user_id: "req.payload._id"}
       // await diseaseModel.create(data)
+        console.log(data )
         return res.status(httpStatus.OK).json(data);
       } else {
         return res.status(httpStatus.BAD_REQUEST).json({"status": "failed", "message": "No disease detected"});
